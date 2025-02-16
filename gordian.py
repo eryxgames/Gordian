@@ -270,9 +270,14 @@ class Game:
             elif action in ['hero', 'h']:
                 self.manage_hero()
             elif action in ['quit', 'q']:
-                self.show_game_stats()
-                print("Thanks for playing!")
-                return False
+                # Confirmation for quit command
+                confirm = input("Are you sure you want to quit? (yes/no): ").lower()
+                if confirm in ['yes', 'y']:
+                    self.show_game_stats()
+                    print("Thanks for playing!")
+                    return False  # Exit the game loop
+                else:
+                    print("Continuing the game...") # User chose not to quit
             else:
                 print("Invalid action.")
 
