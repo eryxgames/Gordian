@@ -1,8 +1,11 @@
 import random
 import os
 import json
+import shutil
+import signal  # Import the signal module
 
 class Game:
+    # ... (rest of your Game class code) ...
     def __init__(self, player_name):
         self.wood = 10
         self.stone = 10
@@ -103,11 +106,11 @@ class Game:
             ("A lucky find! You gain 10 wood.", lambda: self.adjust_resource('wood', 10)),
             ("A hidden cache! You gain 10 stone.", lambda: self.adjust_resource('stone', 10)),
             ("A bountiful harvest! You gain 10 food.", lambda: self.adjust_resource('food', 10)),
-            ("Monster rampage! You lose resources and possibly a person.", self.monster_rampage)
+            ("Monster rampage! You lose resources and possibly a person.", self.monster_rampage)  # Keep this as is.
         ]
         event, effect = random.choice(events)
-        print(self.format_event(event))
-        effect()
+        print(self.format_event(event))  # This prints the event description.
+        effect()  # This calls the appropriate method (monster_rampage, etc.)
 
     def adjust_resource(self, resource, amount):
         if resource == 'wood':
@@ -135,13 +138,13 @@ class Game:
                 self.food = max(0, self.food - random.randint(1, 5))
 
     def monster_rampage(self):
-        print("Monster rampage! You lose resources and possibly a person.")
+        # print("Monster rampage! You lose resources and possibly a person.")  # REMOVE THIS LINE
         self.wood = max(0, self.wood - random.randint(1, 5))
         self.stone = max(0, self.stone - random.randint(1, 5))
         self.food = max(0, self.food - random.randint(1, 5))
         if self.people > 0 and random.random() < 0.5:  # 50% chance of losing a person
             self.people -= 1
-            print("A person was killed by the monster!")
+            print("A person was killed by the monster!") #Keep that message
 
     def check_victory(self):
         if (self.wood >= self.victory_condition['wood'] and
@@ -295,19 +298,25 @@ class Game:
 
     def get_player_action(self):
         while True:
-            action = input("What would you like to do? (collect/build/status/hero/quit): ").lower()
-            if action in ['collect', 'build', 'status', 'hero', 'quit', 'c', 'b', 's', 'h', 'q']:
-                self.command_history.append(action)
-                self.command_index = len(self.command_history)
-                return action
-            elif action == '\x1b[A' and self.command_index > 0:  # Up arrow key
-                self.command_index = max(0, self.command_index - 1)
-                print(self.command_history[self.command_index])
-            elif action == '\x1b[B' and self.command_index < len(self.command_history):  # Down arrow key
-                self.command_index = min(len(self.command_history), self.command_index + 1)
-                print(self.command_history[self.command_index])
-            else:
-                print("Invalid action.")
+            try:
+                action = input("What would you like to do? (collect/build/status/hero/quit): ").lower()
+                if action in ['collect', 'build', 'status', 'hero', 'quit', 'c', 'b', 's', 'h', 'q']:
+                    self.command_history.append(action)
+                    self.command_index = len(self.command_history)
+                    return action
+                elif action == '\x1b[A' and self.command_index > 0:  # Up arrow key
+                    self.command_index = max(0, self.command_index - 1)
+                    print(self.command_history[self.command_index])
+                elif action == '\x1b[B' and self.command_index < len(self.command_history):  # Down arrow key
+                    self.command_index = min(len(self.command_history), self.command_index + 1)
+                    print(self.command_history[self.command_index])
+                else:
+                    print("Invalid action.")
+            except KeyboardInterrupt:
+                print("\nCtrl-C detected. Exiting gracefully...")
+                self.show_game_stats()  # Show game stats before exiting
+                return False
+
 
     def calculate_score(self):
         return max(1, 1000 - self.turn * 10)
@@ -347,8 +356,55 @@ def generate_random_name():
     last_names = ["Smith", "Johnson", "Williams", "Brown", "Jones"]
     return f"{random.choice(first_names)} {random.choice(last_names)}"
 
+def get_terminal_size():
+    """Get the current terminal size."""
+    # Use shutil.get_terminal_size() as a direct replacement
+    return shutil.get_terminal_size()
+
+def center_text(text):
+    """Center align the given text in terminal."""
+    # Get terminal width from the tuple
+    terminal_width, _ = get_terminal_size()
+    
+    # Split the text into lines
+    lines = text.split('\n')
+    
+    # Process each line
+    centered_lines = []
+    for line in lines:
+        # Calculate padding
+        padding = (terminal_width - len(line)) // 2
+        # Add the centered line
+        centered_lines.append(' ' * padding + line)
+    
+    return '\n'.join(centered_lines)
+
+# Your ASCII art text
+ascii_art = """
+║    ┏━╮┏━┓┏━┓╺┳┓╻┏━┓┏┓╻    ║
+║    ┃╺┓┃ ┃┣┳┛ ┃┃┃┣━┫┃┗┫    ║
+║    ┗━┛┗━┛╹┗╸╺┻┛╹╹ ╹╹ ╹    ║
+║                           ║
+║         a Game by         ║
+║       Daniel Sandner      ║
+║         © 2024-25         ║
+"""
+
+# Signal handler for Ctrl-C
+def signal_handler(sig, frame):
+    print("\nCtrl-C detected. Exiting gracefully...")
+    # You can add any cleanup code here if needed
+    exit(0)
+
 def main():
+    # Register the signal handler for Ctrl-C
+    signal.signal(signal.SIGINT, signal_handler)
+
+
+    # Clear the screen (works on both Windows and Unix-like systems)
+    os.system('cls' if os.name == 'nt' else 'clear')
     print("Welcome to Gordian!")
+    print(center_text(ascii_art))
     player_name = input("Enter your name (or press Enter for a random name): ").strip()
     if not player_name:
         player_name = generate_random_name()
@@ -356,11 +412,17 @@ def main():
 
     while True:
         game = Game(player_name)
-        while game.play_turn():
-            if game.check_victory():
-                game.update_hall_of_fame()
-                game.show_game_stats()
-                break
+        try: # Added try-except block
+            while game.play_turn():
+                if game.check_victory():
+                    game.update_hall_of_fame()
+                    game.show_game_stats()
+                    break
+        except KeyboardInterrupt:
+            print("\nCtrl-C detected during game. Exiting gracefully...")
+            game.show_game_stats()
+            break  # Exit the game loop
+
         play_again = input("Do you want to play again? (yes/no): ").lower()
         if play_again != 'yes':
             break
