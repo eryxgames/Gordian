@@ -379,6 +379,13 @@ def center_text(text):
     
     return '\n'.join(centered_lines)
 
+def centered_input(prompt):
+    """Gets input from the user, centered on the screen."""
+    terminal_width, _ = get_terminal_size()
+    padding = (terminal_width - len(prompt)) // 2
+    input_str = input(' ' * padding + prompt)
+    return input_str
+
 # Your ASCII art text
 ascii_art = """
 ║    ┏━╮┏━┓┏━┓╺┳┓╻┏━┓┏┓╻    ║
@@ -397,22 +404,20 @@ def signal_handler(sig, frame):
     exit(0)
 
 def main():
-    # Register the signal handler for Ctrl-C
     signal.signal(signal.SIGINT, signal_handler)
-
-
-    # Clear the screen (works on both Windows and Unix-like systems)
     os.system('cls' if os.name == 'nt' else 'clear')
     print("Welcome to Gordian!")
     print(center_text(ascii_art))
-    player_name = input("Enter your name (or press Enter for a random name): ").strip()
+
+    # Use centered_input for the player name prompt
+    player_name = centered_input("Enter your name (or press Enter for a random name): ").strip()
     if not player_name:
         player_name = generate_random_name()
-    print(f"Welcome, {player_name}!")
+    print(center_text(f"Welcome, {player_name}!"))  # Center the welcome message
 
     while True:
         game = Game(player_name)
-        try: # Added try-except block
+        try:
             while game.play_turn():
                 if game.check_victory():
                     game.update_hall_of_fame()
@@ -421,9 +426,9 @@ def main():
         except KeyboardInterrupt:
             print("\nCtrl-C detected during game. Exiting gracefully...")
             game.show_game_stats()
-            break  # Exit the game loop
+            break
 
-        play_again = input("Do you want to play again? (yes/no): ").lower()
+        play_again = centered_input("Do you want to play again? (yes/no): ").lower()
         if play_again != 'yes':
             break
 
