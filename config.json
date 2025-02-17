@@ -29,7 +29,7 @@
         }
     },
     "audio": {
-        "enabled": true,
+        "enabled": false,
         "music_volume": 0.7,
         "sfx_volume": 0.9,
         "screen_music": {
