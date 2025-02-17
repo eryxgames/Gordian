@@ -45,9 +45,9 @@ class AudioManager:
                 pygame.mixer.music.load(music_path)
                 pygame.mixer.music.play(-1)
             except FileNotFoundError:
-                print(f"Soundtrack: {music_file}")
+                print(f"Soundtrack: {music_file}") # Corrected output
             except pygame.error as e:
-                print(f"Error playing music: {e}")
+                print(f"Error playing music: {e}") # Keep Pygame error message
             except TypeError as e:
                 print(f"Type error. Check your config file for a music path: {e}")
 

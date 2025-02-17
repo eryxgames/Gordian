@@ -86,19 +86,19 @@
         ]
     },
     {
-        "type": "Event",
+        "type": "StoryEvent",
         "event_id": "obelisk_rumors",
         "description": "Rumors spread of a powerful Obelisk in the distance.",
         "audio_cue": "obelisk_rumors.wav"
     },
     {
-       "type": "Event",
+       "type": "StoryEvent",
         "event_id": "monster_threat",
         "description": "Monstrous creatures are guarding the Obelisk!",
         "audio_cue": "monster_threat.wav"
     },
     {
-        "type": "Event",
+        "type": "StoryEvent",
         "event_id": "first_contact",
         "description": "A strange vessel appears in the sky.  First contact has been made!",
         "audio_cue": "first_contact.wav"

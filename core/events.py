@@ -6,20 +6,18 @@ import os
 class Event:
     """Base class for all game events."""
 
-    def __init__(self, event_id, description, audio_cue=None): #added id
-        self.event_id = event_id #unique id
+    def __init__(self, event_id, description, audio_cue=None):
+        self.event_id = event_id
         self.description = description
-        self.audio_cue = audio_cue  # Can be a string or a list of strings
-        self.triggered = False # Add a triggered flag
-
+        self.audio_cue = audio_cue
+        self.triggered = False
 
     def trigger(self, game, ui_manager, audio_manager):
         """Triggers the event, applying its effects to the game."""
-        # Basic implementation: just display the description
         ui_manager.display_message(self.description, "text_warning")
         if self.audio_cue:
             audio_manager.play_sound(self.audio_cue)
-        self.triggered = True #set flag after triggering
+        self.triggered = True
 
 
 class ResourceEvent(Event):
@@ -31,11 +29,10 @@ class ResourceEvent(Event):
         self.amount = amount
 
     def trigger(self, game, ui_manager, audio_manager):
-        super().trigger(game, ui_manager, audio_manager)  # Display description & play sound
-        # Modify the resource amount
+        super().trigger(game, ui_manager, audio_manager)
         if self.resource in game.resources:
             game.resources[self.resource] += self.amount
-            ui_manager.display_message(f"{self.resource}: {game.resources[self.resource]}", "text_normal") #show new resource
+            ui_manager.display_message(f"{self.resource}: {game.resources[self.resource]}", "text_normal")
         else:
             print(f"Error: Invalid resource type in ResourceEvent: {self.resource}")
 
@@ -44,35 +41,43 @@ class ChainedEvent(Event):
     def __init__(self, event_id, description, initial_event, subsequent_events, audio_cue = None):
         super().__init__(event_id, description, audio_cue)
         self.initial_event = initial_event
-        self.subsequent_events = subsequent_events #list of dicts
+        self.subsequent_events = subsequent_events
 
     def trigger(self, game, ui_manager, audio_manager):
-        super().trigger(game, ui_manager, audio_manager)  # Display main event description
-        # Trigger the initial event
+        super().trigger(game, ui_manager, audio_manager)
         if self.initial_event:
-            self.initial_event.trigger(game, ui_manager, audio_manager) #recursive call
+            self.initial_event.trigger(game, ui_manager, audio_manager)
 
-        # Trigger subsequent events based on probability
         for subsequent_event_data in self.subsequent_events:
             if random.random() < subsequent_event_data["probability"]:
                 subsequent_event_data["event"].trigger(game, ui_manager, audio_manager)
 
+# --- NEW: StoryEvent ---
+class StoryEvent(Event):
+    """An event that primarily advances the story."""
+
+    def __init__(self, event_id, description, audio_cue=None):
+        super().__init__(event_id, description, audio_cue)
+
+    # The trigger method is inherited from Event, and already does what we need
+    # (display the description and play the sound).  We don't need to override it.
+
+
 class EventManager:
-    """Manages game events, including loading, selection, and triggering."""
+    """Manages game events."""
 
     def __init__(self):
         self.events = []
-        self.triggered_events = set()  # Keep track of triggered events by ID
+        self.triggered_events = set()
 
     def load_events(self, filename):
-        """Loads event definitions from a JSON file."""
         filepath = os.path.join("data", filename)
         try:
             with open(filepath, 'r') as f:
                 event_data_list = json.load(f)
                 for event_data in event_data_list:
                     event = self.create_event(event_data)
-                    if event:  # Only add if create_event was successful
+                    if event:
                         self.events.append(event)
         except FileNotFoundError:
             print(f"Error: Event file not found: {filepath}")
@@ -81,13 +86,11 @@ class EventManager:
         except KeyError as e:
             print(f"KeyError {e} in event file: {filepath}")
 
-
     def create_event(self, event_data):
-        """Creates an Event object from the given data (recursive)."""
         event_type = event_data["type"]
-        event_id = event_data["event_id"] #get id
+        event_id = event_data["event_id"]
         description = event_data["description"]
-        audio_cue = event_data.get("audio_cue")  # Use .get() to handle missing audio_cue
+        audio_cue = event_data.get("audio_cue")
 
         if event_type == "ResourceEvent":
             resource = event_data["resource"]
@@ -95,9 +98,15 @@ class EventManager:
             return ResourceEvent(event_id, description, resource, amount, audio_cue)
 
         elif event_type == "ChainedEvent":
-            initial_event_data = event_data.get("initial_event")  # Can be None
+            if "initial_event" not in event_data:
+                print(f"Error: ChainedEvent '{event_id}' missing 'initial_event'.")
+                return None
+            if "subsequent_events" not in event_data:
+                print(f"Error: ChainedEvent '{event_id}' missing 'subsequent_events'.")
+                return None
+            initial_event_data = event_data.get("initial_event")
             initial_event = self.create_event(initial_event_data) if initial_event_data else None
-            subsequent_events_data = event_data.get("subsequent_events", []) #list of dicts
+            subsequent_events_data = event_data.get("subsequent_events", [])
             subsequent_events = []
             for sub_event_data in subsequent_events_data:
                 probability = sub_event_data["probability"]
@@ -106,35 +115,33 @@ class EventManager:
 
             return ChainedEvent(event_id, description, initial_event, subsequent_events, audio_cue)
 
+        # --- NEW: Handle StoryEvent ---
+        elif event_type == "StoryEvent":
+            return StoryEvent(event_id, description, audio_cue)
+
         else:
             print(f"Error: Unknown event type: {event_type}")
             return None
 
 
     def get_random_event(self, game):
-        """Selects a random event (placeholder for now)."""
-
-        # Basic implementation: choose any event at random
-        # TODO: Add conditions and probabilities
-        if self.events:  # Check if there are any events loaded
+        if self.events:
             return random.choice(self.events)
         else:
-            return None #return nothing
+            return None
 
     def trigger_event(self, game, ui_manager, audio_manager, event):
-        if event: #check if not None
+        if event:
             event.trigger(game, ui_manager, audio_manager)
 
     def get_event_by_id(self, event_id):
-        """Retrieves an event by its ID."""
         for event in self.events:
             if event.event_id == event_id:
                 return event
         return None
 
     def is_event_triggered(self, event_id):
-        """Checks if an event with the given ID has been triggered."""
-        for event in self.events:
-            if event.event_id == event_id:
-                return event.triggered  # Return the triggered status
-        return False  # Return False if event not found
+      for event in self.events:
+        if event.event_id == event_id:
+          return event.triggered
+      return False
