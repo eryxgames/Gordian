@@ -64,3 +64,30 @@ What would you like to do? (collect/build/status/hero/quit): collect
 Resources collected!
 
 ```
+
+Refactored structure:
+
+```
+gordian/
+├── gordian.py     (main.py - Entry point)
+├── config.json     (General game settings)
+├── core/
+│   ├── game.py      (Core game logic - Game class)
+│   ├── buildings.py (Building classes)
+│   ├── resources.py (Resource class)
+│   ├── hero.py      (Hero class)
+│   ├── events.py     (Event handling - Event classes, EventManager)
+│   ├── ui.py         (User interface functions)
+│   └── audio.py      (Audio handling functions)
+├── data/
+│   ├── buildings.json
+│   ├── events.json
+│   ├── characters.json
+│   └── story.json
+├── assets/          (NEW - All game assets)
+│   ├── sound/       (Sound effect files)
+│   ├── music/       (Music files)
+│   └── themes/      (Theme definition files - JSON)
+│       └── default.json (Example theme file)
+└── save/            (Save files)
+```
