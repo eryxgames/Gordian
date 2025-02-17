@@ -17,12 +17,12 @@
         "hero_unavailable": "gray"
     },
     "symbols": {
-        "wood": "W",
-        "stone": "S",
-        "food": "F",
-        "House": "H",
-        "Farm": "A",
-        "Mine": "M",
-        "Wonder": "O"
+        "wood": "Wood",
+        "stone": "Stone",
+        "food": "Food",
+        "House": "House",
+        "Farm": "Farm",
+        "Mine": "Mine",
+        "Wonder": "Wonder"
     }
 }

@@ -43,11 +43,12 @@ class AudioManager:
             try:
                 music_path = os.path.join("assets", "music", music_file)
                 pygame.mixer.music.load(music_path)
-                pygame.mixer.music.play(-1)
+                pygame.mixer.music.play(-1)  # Play *after* successful load
             except FileNotFoundError:
-                print(f"Soundtrack: {music_file}") # Corrected output
+                print(f"Soundtrack: {music_file}")
+                pygame.mixer.music.unload()  # UNLOAD THE MUSIC
             except pygame.error as e:
-                print(f"Error playing music: {e}") # Keep Pygame error message
+                print(f"Error playing music: {e}")
             except TypeError as e:
                 print(f"Type error. Check your config file for a music path: {e}")
 
