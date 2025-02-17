@@ -28,7 +28,7 @@ GORDIAN  Turn: 15        Food: 10 | Wood: 2 | Stone: 20
   Miners found a hidden cache! You gain 10 stone.       
   stone: 20
 --------------------------------------------------------
-Actions: (C)ollect, (B)uild, (H)ero, (P)eople, (U)pgrades, (Q)uit
+(C)ollect, (B)uild, (H)ero, (P)eople, (U)pgrades, (Q)uit
                         Action:
 ```
 
