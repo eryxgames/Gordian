@@ -164,44 +164,73 @@ class UI:
 
 
     def display_people_screen(self, game):
-      """Displays the people management screen with improved formatting."""
-      self.clear_screen()
-      self.display_top_bar(game)  # Consistent top bar
-      print(self.colorize("--- People Management ---", "text_highlight"))
+        """Displays the people management screen with improved formatting."""
+        self.clear_screen()
+        self.display_top_bar(game)
+        print(self.colorize("--- People Management ---", "text_highlight"))
 
-      # --- Unassigned People ---
-      unassigned_people = game.get_unassigned_people()
-      print(self.colorize("\nUnassigned People:", "text_normal"))
-      if unassigned_people:
-          for i, person in enumerate(unassigned_people):
-              print(f"  {i + 1}. {person.person_class}")
-      else:
-          print("  None")
+        # --- Unassigned People ---
+        unassigned_people = game.get_unassigned_people()
+        print(self.colorize("\nUnassigned People:", "text_normal"))
+        if unassigned_people:
+            for i, person in enumerate(unassigned_people):
+                print(f"  {i + 1}. {person.person_class}")
+        else:
+            print("  None")
 
-      # --- Assigned People (Grouped by Building Type and Level) ---
-      print(self.colorize("\nAssigned People:", "text_normal"))
-      for building_type, building_list in game.buildings.items():
-          if building_list:
-              print(f"  {building_type}:")
-              for building in building_list:
-                  assigned_str = ""
-                  people_counts = building.get_assigned_people_by_class()
-                  for class_name, count in people_counts.items():
-                      assigned_str += f"{count} {class_name}, "
-                  assigned_str = assigned_str.rstrip(", ")  # Remove trailing comma
+        # --- Assigned People (Consolidated by Building Type and Level) ---
+        print(self.colorize("\nAssigned People:", "text_normal"))
 
-                  # Display building name, level, and assignments
-                  print(f"    - {building.name} (Level {building.level}): {assigned_str if assigned_str else 'None'}")
-          else:
-            print(f"  {building_type}: None") #if there are no buildings of this type
+        building_info = {}  # Dictionary to store building info
 
-      # --- Display Last Message ---
-      if self.last_message:
-          print("\n" + self.colorize(self.last_message, self.last_message_color))
-          self.last_message = None  # Clear the message after displaying
-          self.last_message_color = "text_normal"
+        for building_type, building_list in game.buildings.items():
+            if building_list:
+                for building in building_list:
+                    # Create a key that combines building type and level
+                    key = (building.building_type, building.level)
+                    if key not in building_info:
+                        # Initialize entry: count, capacity, people
+                        building_info[key] = {
+                            'count': 0,
+                            'capacity': 0,
+                            'people': {}  # Dictionary to store people by class
+                        }
+                    building_info[key]['count'] += 1
+                    building_info[key]['capacity'] += building.get_capacity()
 
-      print("\nActions: (Assign), (Unassign), (Back)")
+                    # Count assigned people by class
+                    for person in building.assigned_people:
+                        person_class = person.person_class
+                        if person_class not in building_info[key]['people']:
+                            building_info[key]['people'][person_class] = 0
+                        building_info[key]['people'][person_class] += 1
+
+
+        # Now, display the collected building information
+        for (building_type, level), info in building_info.items():
+            # Example: "House (Level 1): 3/15"  (3 houses, capacity 15)
+            building_str = f"  {building_type} (Level {level}): {info['count']}x"
+            #calculate capacity used / capacity total, f.e. 5/12
+            people_count = sum(info['people'].values())
+            capacity_str = f" | {people_count}/{info['capacity']}"
+
+            print(building_str + capacity_str) #print
+
+            # Print assigned people per class, indented
+            if info['people']:
+                for person_class, count in info['people'].items():
+                    print(f"    - {count} {person_class}")
+            else:
+                print("    - None")
+
+
+        # --- Display Last Message ---
+        if self.last_message:
+            print("\n" + self.colorize(self.last_message, self.last_message_color))
+            self.last_message = None  # Clear the message after displaying
+            self.last_message_color = "text_normal"
+
+        print("\nActions: (Assign), (Unassign), (Back)")
 
 
     def display_upgrades_screen(self, game):
