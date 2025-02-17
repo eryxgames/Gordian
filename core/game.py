@@ -102,7 +102,20 @@ class Game:
         self.story_manager = StoryManager(self)
         # --- People Manager ---
         self.people_manager = people.PeopleManager()  # Create a PeopleManager
+        # --- Load Building Data ---
+        self.building_data = self.load_building_data() # Load ONCE
+        buildings.Building._building_data_list = self.building_data #make it static
 
+
+    def load_building_data(self):
+        """Loads building data from JSON."""
+        filepath = os.path.join("data", "buildings.json")
+        try:
+            with open(filepath, 'r') as f:
+                return json.load(f)
+        except (FileNotFoundError, json.JSONDecodeError) as e:
+            print(f"Error loading building data: {e}")
+            return []  # Return empty list on error
 
     def load_hero(self):
         """Loads the hero data from characters.json."""
@@ -131,15 +144,26 @@ class Game:
             ui_manager.display_message("Invalid building type!", "text_warning")
             return
 
+        # --- Find the correct initial building data ---
+        initial_building_data = None
+        for building_data in self.building_data:
+            if building_data["building_type"] == building_type and "1" in building_data["levels"]:
+                initial_building_data = building_data
+                break
+        if initial_building_data is None:
+            ui_manager.display_message(f"Error: No initial data for {building_type}.", "text_warning")
+            return
+
+        # --- Create the building instance with the correct data ---
         if building_type == "House":
-            new_building = buildings.House()
+            new_building = buildings.House(initial_building_data) # Pass data
         elif building_type == "Farm":
-            new_building = buildings.Farm()
+            new_building = buildings.Farm(initial_building_data)
         elif building_type == "Mine":
-            new_building = buildings.Mine()
+            new_building = buildings.Mine(initial_building_data)
         elif building_type == "Wonder":
-            new_building = buildings.Wonder()
-        else:
+            new_building = buildings.Wonder(initial_building_data)
+        else:  # Failsafe (shouldn't be reachable)
             ui_manager.display_message("Invalid building type!", "text_warning")
             return
 
@@ -185,12 +209,10 @@ class Game:
                 production = building.get_production()
                 # --- Get bonuses from assigned people ---
                 for person in building.assigned_people:
-                    # Get the building-specific bonuses from the person
+                    # Use building.building_type, not person.person_class, for bonus
                     building_bonuses = person.bonuses.get(building.building_type, {})
-                    # Iterate through the resources in *that* bonus dictionary
                     for resource, bonus_amount in building_bonuses.items():
-                        production[resource] = production.get(resource, 0) + bonus_amount #add bonuses
-
+                         production[resource] = production.get(resource, 0) + bonus_amount
                 for resource, amount in production.items():
                     self.resources[resource].add(amount)
         ui_manager.display_message("Resources collected!", "text_success")
