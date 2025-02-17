@@ -15,56 +15,14 @@
         "building_mine": "darkgray",
         "hero_available": "brightgreen",
         "hero_unavailable": "gray"
-
     },
     "symbols": {
         "wood": "W",
         "stone": "S",
         "food": "F",
-        "house": "H",
-        "farm": "A",
-        "mine": "M"
-    },
-    "frames": {
-        "main_screen": {
-            "top_left": "┌",
-            "top_right": "┐",
-            "bottom_left": "└",
-            "bottom_right": "┘",
-            "horizontal": "─",
-            "vertical": "│"
-        },
-        "event_log": {
-            "top_left": "+",
-            "top_right": "+",
-            "bottom_left": "+",
-            "bottom_right": "+",
-            "horizontal": "-",
-            "vertical": "|"
-        },
-        "hero_screen":{
-            "top_left": "╔",
-            "top_right": "╗",
-            "bottom_left": "╚",
-            "bottom_right": "╝",
-            "horizontal": "═",
-            "vertical": "║"
-        },
-        "people_screen":{
-            "top_left": "[",
-            "top_right": "]",
-            "bottom_left": "[",
-            "bottom_right": "]",
-            "horizontal": "_",
-            "vertical": "|"
-        },
-        "upgrades_screen":{
-            "top_left": "<",
-            "top_right": ">",
-            "bottom_left": "<",
-            "bottom_right": ">",
-            "horizontal": "=",
-            "vertical": "!"
-        }
+        "House": "H",
+        "Farm": "A",
+        "Mine": "M",
+        "Wonder": "O"
     }
 }

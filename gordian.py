@@ -2,11 +2,13 @@
 import os
 import json
 import signal
+import time #for intro
 import core.game as game
 import core.ui as ui
 import core.audio as audio
 import random  # If you use random name generation
-import time
+from logo import logo_lines # Import the logo
+
 
 def signal_handler(sig, frame):
     print("\nCtrl-C detected. Exiting gracefully...")
@@ -39,8 +41,8 @@ def main():
     ui_manager = ui.UI(config["theme"])
 
 
-    ui_manager.display_message("Welcome to Gordian!", "text_highlight") #use ui class
-    #print(center_text(ascii_art)) #we will use it later
+    ui_manager.display_logo(logo_lines) # Display the logo!
+    #ui_manager.display_message("Welcome to Gordian!", "text_highlight") #use ui class
     player_name = ui_manager.centered_input("Enter your name (or press Enter for a random name): ").strip()
     if not player_name:
         player_name = generate_random_name()  # You might want to move this to a separate function
@@ -49,7 +51,7 @@ def main():
     # Start music
     audio_manager.play_music(config["audio"]["screen_music"]["main"])
 
-    # Display intro story
+    # Display intro story, moved here after audio init
     for line in config.get("intro", []):  # Handle missing intro gracefully
         ui_manager.display_message(line, "text_highlight")
         time.sleep(1)  # Pause between lines (optional)
