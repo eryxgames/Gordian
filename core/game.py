@@ -185,13 +185,15 @@ class Game:
                 production = building.get_production()
                 # --- Get bonuses from assigned people ---
                 for person in building.assigned_people:
-                    # Use building.building_type, not person.person_class, for bonus
+                    # Get the building-specific bonuses from the person
                     building_bonuses = person.bonuses.get(building.building_type, {})
+                    # Iterate through the resources in *that* bonus dictionary
                     for resource, bonus_amount in building_bonuses.items():
-                        production[resource] = production.get(resource, 0) + bonus_amount
+                        production[resource] = production.get(resource, 0) + bonus_amount #add bonuses
+
                 for resource, amount in production.items():
                     self.resources[resource].add(amount)
-        ui_manager.display_message("Resources collected!", "text_success") #show this message only once
+        ui_manager.display_message("Resources collected!", "text_success")
 
 
     def check_victory(self):
@@ -284,9 +286,9 @@ class Game:
     def get_unassigned_people(self):
         """Returns a list of people who are not assigned to any building."""
         assigned_people = []
-        for building_list in self.buildings.values():
-            for building in building_list:
-                assigned_people.extend(building.assigned_people)
+        for building_list in self.buildings.values():  # Iterate through building lists
+            for building in building_list:             # Iterate through buildings
+                assigned_people.extend(building.assigned_people) # Get assigned people
 
         unassigned_people = [person for person in self.people if person not in assigned_people]
         return unassigned_people
