@@ -64,39 +64,38 @@ class UI:
                 return "back"
             else:
                 self.display_message("Invalid action.", "text_warning")
-
-    def display_status(self, game):
-        self.clear_screen()
-        self.display_top_bar(game)  # Combined title, turn, and resources
-        self.display_buildings_and_people(game) # Combined buildings and people
-        self.display_event_log()
-        print("Actions: (C)ollect, (B)uild, (H)ero, (P)eople, (U)pgrades, (Q)uit")
-
+    #----------Reusable Top Bar --------------------------
     def display_top_bar(self, game):
         """Displays the top bar with title, turn, and resources."""
         terminal_width, _ = os.get_terminal_size()
 
-        # --- Title and Turn ---
         title_str = self.colorize("GORDIAN", "text_highlight")
         turn_str = f"Turn: {game.turn}"
         title_turn = f"{title_str}  {turn_str}"
 
-        # --- Resources ---
         resource_str = " | ".join([
             f"{self.colorize(self.theme['symbols'].get('food', 'F'), 'resource_food')}: {game.resources['food'].amount}",
             f"{self.colorize(self.theme['symbols'].get('wood', 'W'), 'resource_wood')}: {game.resources['wood'].amount}",
             f"{self.colorize(self.theme['symbols'].get('stone', 'S'), 'resource_stone')}: {game.resources['stone'].amount}",
         ])
-        # --- Combine and Center ---
-        combined_str = title_turn.ljust(30) + resource_str.rjust(terminal_width-30) #adjust space for title and turn
+
+        combined_str = title_turn.ljust(30) + resource_str.rjust(terminal_width - 30)
         print(combined_str)
-        print("-" * terminal_width)
+        print("-" * terminal_width)  # Separator line
+
+    #---------Main Status Screen -------------------------
+    def display_status(self, game):
+        """Displays the main game status screen."""
+        self.clear_screen()
+        self.display_top_bar(game)  # Reusable top bar
+        self.display_buildings_and_people(game)
+        self.display_event_log()
+        print("Actions: (C)ollect, (B)uild, (H)ero, (P)eople, (U)pgrades, (Q)uit")
 
     def display_buildings_and_people(self, game):
         """Displays buildings, people, and hero status concisely."""
         terminal_width, _ = os.get_terminal_size()
 
-        # --- People and Hero ---
         people_str = f"People: {game.people}"
         hero_str = f"Hero: {'Avl' if game.hero.available else 'Unavl'}"
         if game.hero.assigned_to:
@@ -106,7 +105,6 @@ class UI:
 
         people_hero_str = f"{people_str}  |  {hero_str}"
 
-        # --- Buildings ---
         building_strs = []
         for building_type, building_list in game.buildings.items():
             if building_list:
@@ -114,7 +112,6 @@ class UI:
                 building_strs.append(f"{symbol}:{len(building_list)}")
         buildings_str = "  ".join(building_strs)
 
-        # --- Combine and Center ---, put strings on their lines
         print(people_hero_str.center(terminal_width))
         print(f"Structures: {buildings_str}".center(terminal_width))
         print("-" * terminal_width)
@@ -125,7 +122,7 @@ class UI:
         print(self.colorize("--- Events ---", "text_highlight"))
         for message in self.event_log:
             for line in self.wrap_text(message, terminal_width - 4):
-                print("  " + line)  # Indent
+                print("  " + line)
         print("-" * terminal_width)
 
     def wrap_text(self, text, width):
@@ -143,10 +140,12 @@ class UI:
             lines.append(current_line)
         return lines
 
+    #----------Hero Screen----------------------------------
     def display_hero_screen(self, game):
         """Displays the hero screen."""
         self.clear_screen()
-        print(self.colorize("--- Hero Screen ---", "text_highlight"))
+        self.display_top_bar(game)  # Reusable top bar
+        print(self.colorize("--- Hero Details ---", "text_highlight"))
         print(f"Name: {game.hero.name}")
         print(f"Class: {game.hero.hero_class}")
         print(f"Level: {game.hero.level}")
@@ -158,17 +157,21 @@ class UI:
             print("On a quest!")
         print("\nActions: (Assign), (Quest), (Back)")
 
+    #----------People Screen-------------------------------
     def display_people_screen(self, game):
         """Displays the people management screen."""
         self.clear_screen()
-        print(self.colorize("--- People Screen ---", "text_highlight"))
+        self.display_top_bar(game)  # Reusable top bar
+        print(self.colorize("--- People Management ---", "text_highlight"))
         print("No people management implemented yet.")
         print("Press 'Enter' or type 'back' to return to the main screen.")
 
+    #----------Upgrades Screen-----------------------------
     def display_upgrades_screen(self, game):
         """Displays the building upgrades screen."""
         self.clear_screen()
-        print(self.colorize("--- Upgrades Screen ---", "text_highlight"))
+        self.display_top_bar(game)  # Reusable top bar
+        print(self.colorize("--- Building Upgrades ---", "text_highlight"))
         if not any(game.buildings.values()):
             print("No buildings to upgrade yet.")
         else:
@@ -181,7 +184,6 @@ class UI:
                     else:
                         print(f"{building.name} (Level {building.level}) - Max Level")
         print("\nPress 'u' to select building to upgrade, or 'back' to return")
-
 
     def display_logo(self, logo_lines):
         """Displays the ASCII art logo, centered."""
