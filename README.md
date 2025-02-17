@@ -12,6 +12,25 @@
 
 Command a growing settlement through text-based decision making. Build fortifications, manage resources, and protect your followers from a mysterious threat that lurks in the shadows.
 
+Developer screenshot (v0.0.2a):
+
+```console
+
+GORDIAN  Turn: 15        Food: 10 | Wood: 2 | Stone: 20 
+--------------------------------------------------------
+           People: 0  |  Hero: Unavl (Quest)
+                  Structures: HOUSE:1
+--------------------------------------------------------
+--- Events ---
+  Resources collected!
+  Rumors spread of a powerful Obelisk in the distance.  
+  Resources collected!
+  Miners found a hidden cache! You gain 10 stone.       
+  stone: 20
+--------------------------------------------------------
+Actions: (C)ollect, (B)uild, (H)ero, (P)eople, (U)pgrades, (Q)uit
+                        Action:
+```
 
 Developer screenshot (v0.0.1a):
 
