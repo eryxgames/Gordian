@@ -3,6 +3,7 @@ import core.events as events
 import core.buildings as buildings
 import core.hero as hero
 import core.resources as resources
+import core.people as people
 import json
 import os
 import random
@@ -80,13 +81,13 @@ class Game:
         self.player_name = player_name
         self.config = config
         self.turn = 0
-        # --- Use per-resource max_amounts ---
         self.resources = {
             "wood": resources.Resource("wood", self.config["starting_resources"]["wood"], self.config["max_amounts"]["wood"]),
             "stone": resources.Resource("stone", self.config["starting_resources"]["stone"], self.config["max_amounts"]["stone"]),
             "food": resources.Resource("food", self.config["starting_resources"]["food"], self.config["max_amounts"]["food"])
         }
-        self.people = 0
+        self.people = []  # Store Person objects
+        self.total_people = 0
         self.victory_condition = config["victory_conditions"]["standard"]
         self.buildings = {
             "House": [],
@@ -98,7 +99,9 @@ class Game:
         self.current_screen = "main"
         self.event_manager = events.EventManager()
         self.event_manager.load_events("events.json")
-        self.story_manager = StoryManager(self) #create story manager
+        self.story_manager = StoryManager(self)
+        # --- People Manager ---
+        self.people_manager = people.PeopleManager()  # Create a PeopleManager
 
 
     def load_hero(self):
@@ -177,18 +180,24 @@ class Game:
             ui_manager.display_message("Not enough resources to upgrade!", "text_warning")
 
     def collect_resources(self, ui_manager):
-        """Collects resources from all buildings."""
         for building_list in self.buildings.values():
             for building in building_list:
                 production = building.get_production()
+                # --- Get bonuses from assigned people ---
+                for person in building.assigned_people:
+                    # Use building.building_type, not person.person_class, for bonus
+                    building_bonuses = person.bonuses.get(building.building_type, {})
+                    for resource, bonus_amount in building_bonuses.items():
+                        production[resource] = production.get(resource, 0) + bonus_amount
                 for resource, amount in production.items():
                     self.resources[resource].add(amount)
-        ui_manager.display_message("Resources collected!", "text_success")
+        ui_manager.display_message("Resources collected!", "text_success") #show this message only once
+
 
     def check_victory(self):
         """Checks for standard and wonder victory conditions."""
         # Standard Victory
-        if all(self.resources[res].amount >= self.victory_condition[res] for res in ["wood", "stone", "food"]) and self.people >= self.victory_condition['people']:
+        if all(self.resources[res].amount >= self.victory_condition[res] for res in ["wood", "stone", "food"]) and self.total_people >= self.victory_condition['people']:
             return True
 
         # Wonder Victory
@@ -204,17 +213,83 @@ class Game:
         ui_manager.display_message(f"Turns played: {self.turn}", "text_normal")
 
     def add_person(self, ui_manager):
-        """Adds a person to the village with a certain probability."""
         base_probability = 0.15
         building_bonus = 0.01 * sum(len(buildings) for buildings in self.buildings.values())
-        #house_bonus = 0.01 * len(self.buildings["House"])  # Example: Bonus for houses
-        # Add other bonuses here (e.g., for happiness, events, hero class)
-        total_probability = base_probability + building_bonus # + house_bonus
+        total_probability = base_probability + building_bonus
 
         if random.random() < total_probability:
-            self.people += 1
-            ui_manager.display_message("A new person has arrived!", "text_success")
-            #add sound
+            # --- Choose a person class (data-driven) ---
+            available_classes = self.people_manager.get_available_classes()
+            if available_classes:
+                new_person_class_id = random.choice(available_classes) #choose class id
+                new_person = self.people_manager.create_person(new_person_class_id)  # Create a Person instance
+                if new_person:
+                    self.people.append(new_person)
+                    self.total_people += 1
+                    ui_manager.display_message(f"A new {new_person.person_class} has arrived!", "text_success")
+            else: #failsafe
+                print("Error: no people classes defined") #should not happen
+                new_person = people.Person("Citizen")
+                self.people.append(new_person)
+                self.total_people += 1
+                ui_manager.display_message(f"A new {new_person.person_class} has arrived!", "text_success")
+
+    def assign_person(self, building_type, person, ui_manager):
+        """Assigns a person to a building."""
+        if building_type not in self.buildings:
+            ui_manager.display_message("Invalid building type!", "text_warning")
+            return False
+
+        if not self.buildings[building_type]:
+            ui_manager.display_message(f"No {building_type} buildings exist!", "text_warning")
+            return False
+
+        # Find an available building of the specified type
+        available_building = None
+        for building in self.buildings[building_type]:
+            if building.can_assign_person():
+                available_building = building
+                break
+
+        if available_building:
+            if available_building.assign_person(person):
+                ui_manager.display_message(f"{person.person_class} assigned to {available_building.name}!", "text_success")
+                return True
+            else:
+                ui_manager.display_message(f"Could not assign {person.person_class} to {available_building.name} - building full!", "text_warning")
+                return False
+        else:
+            ui_manager.display_message(f"No {building_type} buildings with available space!", "text_warning")
+            return False
+
+    def unassign_person(self, building_type, person, ui_manager):
+        """Unassign a person"""
+        if building_type not in self.buildings:
+            ui_manager.display_message("Invalid building type!", "text_warning")
+            return False # Fail, if invalid building type
+
+        if not self.buildings[building_type]:
+            ui_manager.display_message(f"No {building_type} buildings exist!", "text_warning")
+            return False # Fail, if no building
+
+        for building in self.buildings[building_type]:
+            if building.unassign_person(person):
+                ui_manager.display_message(f"Unassigned {person} from {building.name}", "text_success")
+                return True #success
+
+        #if we are here, there is no such person assigned
+        ui_manager.display_message(f"No {person} assigned to {building_type}!", "text_warning")
+        return False # Fail, If no such person assigned to this type of building
+
+    def get_unassigned_people(self):
+        """Returns a list of people who are not assigned to any building."""
+        assigned_people = []
+        for building_list in self.buildings.values():
+            for building in building_list:
+                assigned_people.extend(building.assigned_people)
+
+        unassigned_people = [person for person in self.people if person not in assigned_people]
+        return unassigned_people
 
     def play_turn(self, ui_manager, audio_manager):
         """Plays a single turn of the game."""
@@ -240,7 +315,7 @@ class Game:
                 self.collect_resources(ui_manager)
                 event = self.event_manager.get_random_event(self)
                 self.event_manager.trigger_event(self, ui_manager, audio_manager, event)
-                self.add_person(ui_manager)  # Add people after events
+                self.add_person(ui_manager)
                 self.turn += 1
             elif action == 'b':
                 building_type = ui_manager.centered_input("Build (House/Farm/Mine/Wonder, or Back): ").title()
@@ -292,11 +367,8 @@ class Game:
                     ui_manager.display_message("Hero is not available.", "text_warning")
 
         elif self.current_screen == "people":
-            ui_manager.display_people_screen(self)
-            action = ui_manager.get_player_action(["back"], allow_empty=True)
-            if action == "back" or action == "":
-                self.current_screen = "main"
-                audio_manager.play_music(self.config["audio"]["screen_music"]["main"])
+            self.handle_people_screen(ui_manager, audio_manager) # Refactored people screen
+
 
         elif self.current_screen == "upgrades":
             ui_manager.display_upgrades_screen(self)
@@ -315,3 +387,101 @@ class Game:
                   ui_manager.display_message("Invalid building type!", "text_warning")
         self.story_manager.check_triggers(ui_manager, audio_manager)
         return True
+
+    def handle_people_screen(self, ui_manager, audio_manager):
+        """Handles the people management screen logic."""
+
+        self.current_screen = "people"
+        audio_manager.play_music(self.config["audio"]["screen_music"]["people"])
+        ui_manager.display_people_screen(self) #display
+
+        while self.current_screen == "people":
+            action = ui_manager.get_player_action(["assign", "unassign", "back"], allow_empty=True)
+
+            if action == "back" or action == "":
+                self.current_screen = "main"
+                audio_manager.play_music(self.config["audio"]["screen_music"]["main"])
+                return  # Exit the people management loop
+
+            elif action == "assign":
+                self.handle_assign_people(ui_manager)
+
+            elif action == "unassign":
+                self.handle_unassign_people(ui_manager)
+
+    def handle_assign_people(self, ui_manager):
+      """Handles the 'assign' action on the people screen."""
+
+      unassigned_people = self.get_unassigned_people()
+      if not unassigned_people:
+          ui_manager.display_message("No unassigned people available.", "text_warning")
+          return
+
+      # Display available people
+      ui_manager.display_message("Unassigned People:", "text_highlight")
+      for i, person in enumerate(unassigned_people):
+          ui_manager.display_message(f"{i + 1}. {person.person_class}")
+
+      # Get person selection
+      while True: #input loop
+        try:
+          person_index = ui_manager.centered_input("Select person to assign (or Back): ")
+          if person_index.lower() == "back" or person_index == "":
+            return #exit
+          person_index = int(person_index) - 1  # Adjust for 0-indexing
+          if 0 <= person_index < len(unassigned_people):
+              selected_person = unassigned_people[person_index]
+              break #if correct, break input loop
+          else:
+              ui_manager.display_message("Invalid person selection.", "text_warning")
+        except ValueError:
+          ui_manager.display_message("Invalid input. Please enter a number.", "text_warning")
+
+
+      # Get building type selection
+      while True: #input loop for building
+        building_type = ui_manager.centered_input("Assign to building type (House/Farm/Mine, or Back): ").title()
+        if building_type in self.buildings:
+            if self.assign_person(building_type, selected_person, ui_manager):
+                break  # Exit on successful assignment
+        elif building_type == "Back" or building_type == "":
+            return  # Go back to the people screen main menu
+        else:
+            ui_manager.display_message("Invalid building type.", "text_warning")
+
+    def handle_unassign_people(self, ui_manager):
+      """Handles the 'unassign' action on the people screen."""
+      # Display assigned people with building info
+      ui_manager.display_message("Assigned People:", "text_highlight")
+
+      #create list of assigned people to select:
+      assigned_people_list = []
+      for building_type, building_list in self.buildings.items():
+            for building in building_list:
+                for i, person in enumerate(building.assigned_people):
+                    assigned_people_list.append((person, building, building_type)) #tuple of necessary data
+
+      if not assigned_people_list:
+            ui_manager.display_message("No people are currently assigned.", "text_warning")
+            return #exit if no assigned people
+
+      for i, (person, building, building_type) in enumerate(assigned_people_list):
+          ui_manager.display_message(f"{i + 1}. {person.person_class} (in {building.name} - {building_type})")
+
+      # Get person selection
+      while True: #input loop
+        try:
+          person_index = ui_manager.centered_input("Select person to unassign (or Back): ")
+          if person_index.lower() == "back" or person_index == "":
+                return
+          person_index = int(person_index) - 1
+
+          if 0 <= person_index < len(assigned_people_list):
+                selected_person, selected_building, selected_building_type = assigned_people_list[person_index]
+                if self.unassign_person(selected_building_type, selected_person, ui_manager):
+                    break # Success
+          else:
+              ui_manager.display_message("Invalid person selection.", "text_warning")
+
+        except ValueError:
+          ui_manager.display_message("Invalid input, enter a number", "text_warning")

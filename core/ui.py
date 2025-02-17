@@ -64,7 +64,7 @@ class UI:
                 return "back"
             else:
                 self.display_message("Invalid action.", "text_warning")
-    #----------Reusable Top Bar --------------------------
+
     def display_top_bar(self, game):
         """Displays the top bar with title, turn, and resources."""
         terminal_width, _ = os.get_terminal_size()
@@ -81,13 +81,12 @@ class UI:
 
         combined_str = title_turn.ljust(30) + resource_str.rjust(terminal_width - 30)
         print(combined_str)
-        print("-" * terminal_width)  # Separator line
+        print("-" * terminal_width)
 
-    #---------Main Status Screen -------------------------
     def display_status(self, game):
         """Displays the main game status screen."""
         self.clear_screen()
-        self.display_top_bar(game)  # Reusable top bar
+        self.display_top_bar(game)
         self.display_buildings_and_people(game)
         self.display_event_log()
         print("Actions: (C)ollect, (B)uild, (H)ero, (P)eople, (U)pgrades, (Q)uit")
@@ -96,7 +95,7 @@ class UI:
         """Displays buildings, people, and hero status concisely."""
         terminal_width, _ = os.get_terminal_size()
 
-        people_str = f"People: {game.people}"
+        people_str = f"People: {game.total_people}"
         hero_str = f"Hero: {'Avl' if game.hero.available else 'Unavl'}"
         if game.hero.assigned_to:
             hero_str += f" ({game.hero.assigned_to})"
@@ -123,7 +122,6 @@ class UI:
         for message in self.event_log:
             for line in self.wrap_text(message, terminal_width - 4):
                 print("  " + line)
-        print("-" * terminal_width)
 
     def wrap_text(self, text, width):
         """Wraps text to the specified width."""
@@ -140,11 +138,10 @@ class UI:
             lines.append(current_line)
         return lines
 
-    #----------Hero Screen----------------------------------
     def display_hero_screen(self, game):
         """Displays the hero screen."""
         self.clear_screen()
-        self.display_top_bar(game)  # Reusable top bar
+        self.display_top_bar(game)
         print(self.colorize("--- Hero Details ---", "text_highlight"))
         print(f"Name: {game.hero.name}")
         print(f"Class: {game.hero.hero_class}")
@@ -157,20 +154,45 @@ class UI:
             print("On a quest!")
         print("\nActions: (Assign), (Quest), (Back)")
 
-    #----------People Screen-------------------------------
     def display_people_screen(self, game):
         """Displays the people management screen."""
         self.clear_screen()
-        self.display_top_bar(game)  # Reusable top bar
+        self.display_top_bar(game)
         print(self.colorize("--- People Management ---", "text_highlight"))
-        print("No people management implemented yet.")
-        print("Press 'Enter' or type 'back' to return to the main screen.")
 
-    #----------Upgrades Screen-----------------------------
+        # Show unassigned people
+        unassigned_people = game.get_unassigned_people()
+        print(self.colorize("Unassigned:", "text_normal"))
+        if unassigned_people:
+            for i, person in enumerate(unassigned_people):
+                print(f"  {i + 1}. {person.person_class}")
+        else:
+            print("  None")
+
+        # Show assigned people, grouped by building
+        print(self.colorize("\nAssigned:", "text_normal"))
+        for building_type, building_list in game.buildings.items():
+            if building_list:
+                print(f"  {building_type}:")
+                for building in building_list:
+                    assigned_str = ""
+                    people_counts = building.get_assigned_people_by_class()
+                    for class_name, count in people_counts.items():
+                        assigned_str += f"{count} {class_name}, "
+                    assigned_str = assigned_str.rstrip(", ")  # Remove trailing comma and space
+                    if assigned_str:
+                        print(f"    - {building.name}: {assigned_str}")
+                    else:
+                        print(f"    - {building.name}: None") #if no assigned people
+
+        print("\nActions: (Assign), (Unassign), (Back)")
+
+
+
     def display_upgrades_screen(self, game):
         """Displays the building upgrades screen."""
         self.clear_screen()
-        self.display_top_bar(game)  # Reusable top bar
+        self.display_top_bar(game)
         print(self.colorize("--- Building Upgrades ---", "text_highlight"))
         if not any(game.buildings.values()):
             print("No buildings to upgrade yet.")
@@ -184,6 +206,7 @@ class UI:
                     else:
                         print(f"{building.name} (Level {building.level}) - Max Level")
         print("\nPress 'u' to select building to upgrade, or 'back' to return")
+
 
     def display_logo(self, logo_lines):
         """Displays the ASCII art logo, centered."""
