@@ -4,6 +4,11 @@
         "stone": 10,
         "food": 10
     },
+    "max_amounts": {
+        "wood": 150,
+        "stone": 80,
+        "food": 100
+    },
     "victory_conditions": {
         "standard": {
             "wood": 50,
@@ -29,7 +34,7 @@
         }
     },
     "audio": {
-        "enabled": false,
+        "enabled": true,
         "music_volume": 0.7,
         "sfx_volume": 0.9,
         "screen_music": {

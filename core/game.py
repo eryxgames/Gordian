@@ -5,6 +5,7 @@ import core.hero as hero
 import core.resources as resources
 import json
 import os
+import random
 
 class StoryManager:
     def __init__(self, game):
@@ -78,11 +79,12 @@ class Game:
     def __init__(self, player_name, config):
         self.player_name = player_name
         self.config = config
-        self.turn = 0  # Initialize turn
+        self.turn = 0
+        # --- Use per-resource max_amounts ---
         self.resources = {
-            "wood": resources.Resource("wood", self.config["starting_resources"]["wood"]),
-            "stone": resources.Resource("stone", self.config["starting_resources"]["stone"]),
-            "food": resources.Resource("food", self.config["starting_resources"]["food"])
+            "wood": resources.Resource("wood", self.config["starting_resources"]["wood"], self.config["max_amounts"]["wood"]),
+            "stone": resources.Resource("stone", self.config["starting_resources"]["stone"], self.config["max_amounts"]["stone"]),
+            "food": resources.Resource("food", self.config["starting_resources"]["food"], self.config["max_amounts"]["food"])
         }
         self.people = 0
         self.victory_condition = config["victory_conditions"]["standard"]
@@ -124,9 +126,8 @@ class Game:
         """Builds a new building of the specified type."""
         if building_type not in self.buildings:
             ui_manager.display_message("Invalid building type!", "text_warning")
-            return  # Early exit
+            return
 
-        new_building = None
         if building_type == "House":
             new_building = buildings.House()
         elif building_type == "Farm":
@@ -135,8 +136,8 @@ class Game:
             new_building = buildings.Mine()
         elif building_type == "Wonder":
             new_building = buildings.Wonder()
-
-        if new_building is None: #failsafe if building is still none
+        else:
+            ui_manager.display_message("Invalid building type!", "text_warning")
             return
 
         cost = new_building.get_cost()
@@ -150,31 +151,30 @@ class Game:
             ui_manager.display_message("Not enough resources!", "text_warning")
 
     def upgrade_building(self, building_type, ui_manager, audio_manager):
-      """Upgrades the first building of the specified type (simplified)."""
+        """Upgrades the first building of the specified type (simplified)."""
+        if building_type not in self.buildings:
+            ui_manager.display_message("Invalid building type!", "text_warning")
+            return
 
-      if building_type not in self.buildings:
-          ui_manager.display_message("Invalid building type!", "text_warning")
-          return #early exit
+        if not self.buildings[building_type]:
+            ui_manager.display_message(f"No {building_type} to upgrade!", "text_warning")
+            return
 
-      if not self.buildings[building_type]:
-        ui_manager.display_message(f"No {building_type} to upgrade!", "text_warning")
-        return #early exit
+        building_to_upgrade = self.buildings[building_type][0]
 
-      building_to_upgrade = self.buildings[building_type][0]  # Simplification: Upgrade the *first* building of that type
+        if not building_to_upgrade.can_upgrade():
+            ui_manager.display_message(f"{building_to_upgrade.name} is already at max level!", "text_warning")
+            return
 
-      if not building_to_upgrade.can_upgrade():
-        ui_manager.display_message(f"{building_to_upgrade.name} is already at max level!", "text_warning")
-        return #early exit
-
-      upgrade_cost = building_to_upgrade.get_upgrade_cost()
-      if all(self.resources[res].can_afford(amt) for res, amt in upgrade_cost.items()):
-          for res, amt in upgrade_cost.items():
-              self.resources[res].remove(amt)
-          building_to_upgrade.upgrade()
-          ui_manager.display_message(f"{building_to_upgrade.building_type} upgraded to {building_to_upgrade.name} (level {building_to_upgrade.level})!", "text_success")
-          audio_manager.play_sound("upgrade.wav")
-      else:
-          ui_manager.display_message("Not enough resources to upgrade!", "text_warning")
+        upgrade_cost = building_to_upgrade.get_upgrade_cost()
+        if all(self.resources[res].can_afford(amt) for res, amt in upgrade_cost.items()):
+            for res, amt in upgrade_cost.items():
+                self.resources[res].remove(amt)
+            building_to_upgrade.upgrade()
+            ui_manager.display_message(f"{building_to_upgrade.building_type} upgraded to {building_to_upgrade.name} (level {building_to_upgrade.level})!", "text_success")
+            audio_manager.play_sound("upgrade.wav")
+        else:
+            ui_manager.display_message("Not enough resources to upgrade!", "text_warning")
 
     def collect_resources(self, ui_manager):
         """Collects resources from all buildings."""
@@ -183,7 +183,7 @@ class Game:
                 production = building.get_production()
                 for resource, amount in production.items():
                     self.resources[resource].add(amount)
-        ui_manager.display_message("Resources collected!", "text_success") #message only 1
+        ui_manager.display_message("Resources collected!", "text_success")
 
     def check_victory(self):
         """Checks for standard and wonder victory conditions."""
@@ -192,8 +192,8 @@ class Game:
             return True
 
         # Wonder Victory
-        for wonder in self.buildings.get("Wonder", []):  # Safely get the list
-            if wonder.name == "Obelisk": #check by name if you have wonder
+        for wonder in self.buildings.get("Wonder", []):
+            if wonder.name == "Obelisk":
                 return True
 
         return False
@@ -203,94 +203,115 @@ class Game:
         ui_manager.display_message("Game Over!", "text_highlight")
         ui_manager.display_message(f"Turns played: {self.turn}", "text_normal")
 
+    def add_person(self, ui_manager):
+        """Adds a person to the village with a certain probability."""
+        base_probability = 0.15
+        building_bonus = 0.01 * sum(len(buildings) for buildings in self.buildings.values())
+        #house_bonus = 0.01 * len(self.buildings["House"])  # Example: Bonus for houses
+        # Add other bonuses here (e.g., for happiness, events, hero class)
+        total_probability = base_probability + building_bonus # + house_bonus
+
+        if random.random() < total_probability:
+            self.people += 1
+            ui_manager.display_message("A new person has arrived!", "text_success")
+            #add sound
+
     def play_turn(self, ui_manager, audio_manager):
-      """Plays a single turn of the game."""
+        """Plays a single turn of the game."""
 
-      # --- Main Screen ---
-      if self.current_screen == "main":
-          ui_manager.display_status(self)
-          action = ui_manager.get_player_action(["c", "b", "h", "p", "u", "quit"])
+        if self.current_screen == "main":
+            ui_manager.display_status(self)
+            action = ui_manager.get_player_action(["c", "b", "h", "p", "u", "quit"])
 
-          if action == "quit":
-              confirm = ui_manager.centered_input("Are you sure you want to quit? (yes/no): ")
-              if confirm in ['yes', 'y']:
-                  return False  # End the game
-              #If not confirmed, just continue
-          elif action == "h":
-              self.current_screen = "hero"
-              audio_manager.play_music(self.config["audio"]["screen_music"]["hero"])
-          elif action == "p":
-              self.current_screen = "people"
-              audio_manager.play_music(self.config["audio"]["screen_music"]["people"])
-          elif action == "u":
-              self.current_screen = "upgrades"
-              audio_manager.play_music(self.config["audio"]["screen_music"]["upgrades"])
-          elif action == "c":
-              self.collect_resources(ui_manager)
-              event = self.event_manager.get_random_event(self)
-              self.event_manager.trigger_event(self, ui_manager, audio_manager, event)
-              self.turn += 1  # Increment turn counter *only* on actions
-          elif action == "b":
-              building_type = ui_manager.centered_input("Build (House/Farm/Mine/Wonder, or Back): ").title()
-              if building_type in ("House", "Farm", "Mine", "Wonder"):
-                self.build_building(building_type, ui_manager, audio_manager)
-                self.turn += 1  # Increment turn counter
-              elif building_type == "Back" or building_type == "":
-                pass #return to main screen
-              else:
-                ui_manager.display_message("Invalid building type!", "text_warning")
+            if action == "quit":
+                confirm = ui_manager.centered_input("Are you sure you want to quit? (yes/no): ")
+                if confirm in ['yes', 'y']:
+                    return False
+            elif action == "h":
+                self.current_screen = "hero"
+                audio_manager.play_music(self.config["audio"]["screen_music"]["hero"])
+            elif action == "p":
+                self.current_screen = "people"
+                audio_manager.play_music(self.config["audio"]["screen_music"]["people"])
+            elif action == "u":
+                self.current_screen = "upgrades"
+                audio_manager.play_music(self.config["audio"]["screen_music"]["upgrades"])
+            elif action == 'c':
+                self.collect_resources(ui_manager)
+                event = self.event_manager.get_random_event(self)
+                self.event_manager.trigger_event(self, ui_manager, audio_manager, event)
+                self.add_person(ui_manager)  # Add people after events
+                self.turn += 1
+            elif action == 'b':
+                building_type = ui_manager.centered_input("Build (House/Farm/Mine/Wonder, or Back): ").title()
+                if building_type in ("House", "Farm", "Mine", "Wonder"):
+                    self.build_building(building_type, ui_manager, audio_manager)
+                    self.turn += 1
+                elif building_type == "Back" or building_type == "":
+                    pass
+                else:
+                    ui_manager.display_message("Invalid building type!", "text_warning")
+
+            elif action == 'u':
+                building_type = ui_manager.centered_input("Upgrade which building type (House/Farm/Mine, or Back)? ").title()
+                if building_type in ("House", "Farm", "Mine"):
+                  self.upgrade_building(building_type, ui_manager, audio_manager)
+                  self.turn += 1
+                elif building_type == "Back" or building_type == "":
+                    pass #return to upgrades screen
+
+                else:
+                  ui_manager.display_message("Invalid building type!", "text_warning")
+            else:
+                ui_manager.display_message("Invalid action.", "text_warning")
 
 
-      # --- Hero Screen ---
-      elif self.current_screen == "hero":
-          ui_manager.display_hero_screen(self)
-          action = ui_manager.get_player_action(["assign", "quest", "back"], allow_empty=True)
-          if action == "back" or action == "":
-              self.current_screen = "main"
-              audio_manager.play_music(self.config["audio"]["screen_music"]["main"])
-          elif action == "assign":
-              building_type = ui_manager.centered_input("Assign to (House/Farm/Mine, or Back): ").title()
-              if building_type in self.buildings and self.buildings[building_type]:
+        elif self.current_screen == "hero":
+            ui_manager.display_hero_screen(self)
+            action = ui_manager.get_player_action(["assign", "quest", "back"], allow_empty=True)
+            if action == "back" or action == "":
+                self.current_screen = "main"
+                audio_manager.play_music(self.config["audio"]["screen_music"]["main"])
+            elif action == "assign":
+                building_type = ui_manager.centered_input("Assign to (House/Farm/Mine, or Back): ").title()
+                if building_type in self.buildings and self.buildings[building_type]:
                     self.hero.assign_to(building_type)
                     ui_manager.display_message(f"Hero assigned to {building_type}!", "text_success")
                     audio_manager.play_sound("assign.wav")
-              elif building_type == "Back" or building_type == "":
-                    pass #return to hero screen
-              else:
-                ui_manager.display_message("Invalid building type.", "text_warning")
-          elif action == "quest":
-              if self.hero.available:
-                  self.hero.send_on_quest()
-                  ui_manager.display_message("Hero sent on a quest!", "text_success")
-                  audio_manager.play_sound("quest_start.wav")
-                  self.turn += 1  # Increment turn counter when sending on quest
-              else:
-                  ui_manager.display_message("Hero is not available.", "text_warning")
+                elif building_type == "Back" or building_type == "":
+                    pass
+                else:
+                    ui_manager.display_message("Invalid building type.", "text_warning")
+            elif action == "quest":
+                if self.hero.available:
+                    self.hero.send_on_quest()
+                    ui_manager.display_message("Hero sent on a quest!", "text_success")
+                    audio_manager.play_sound("quest_start.wav")
+                    self.turn += 1  # Increment turn counter
+                else:
+                    ui_manager.display_message("Hero is not available.", "text_warning")
 
-      # --- People Screen ---
-      elif self.current_screen == "people":
-          ui_manager.display_people_screen(self)
-          action = ui_manager.get_player_action(["back"], allow_empty=True)  # Only "back" is valid
-          if action == "back" or action == "":
-              self.current_screen = "main"
-              audio_manager.play_music(self.config["audio"]["screen_music"]["main"])
+        elif self.current_screen == "people":
+            ui_manager.display_people_screen(self)
+            action = ui_manager.get_player_action(["back"], allow_empty=True)
+            if action == "back" or action == "":
+                self.current_screen = "main"
+                audio_manager.play_music(self.config["audio"]["screen_music"]["main"])
 
-      # --- Upgrades Screen ---
-      elif self.current_screen == "upgrades":
-          ui_manager.display_upgrades_screen(self)
-          action = ui_manager.get_player_action(["u", "back"], allow_empty=True)
-          if action == "back" or action == "":
-              self.current_screen = "main"
-              audio_manager.play_music(self.config["audio"]["screen_music"]["main"])
-          elif action == "u":
-            building_type = ui_manager.centered_input("Upgrade which building type (House/Farm/Mine, or Back)? ").title()
-            if building_type in ("House", "Farm", "Mine"):
-                self.upgrade_building(building_type, ui_manager, audio_manager)
-                self.turn += 1 # Increment turn
-            elif building_type == "Back" or building_type == "":
-                pass #return to upgrades screen
-            else:
-                ui_manager.display_message("Invalid building type!", "text_warning")
-
-      self.story_manager.check_triggers(ui_manager, audio_manager)  # Check for story triggers
-      return True  # Continue playing
+        elif self.current_screen == "upgrades":
+            ui_manager.display_upgrades_screen(self)
+            action = ui_manager.get_player_action(["u", "back"], allow_empty=True)
+            if action == "back" or action == "":
+                self.current_screen = "main"
+                audio_manager.play_music(self.config["audio"]["screen_music"]["main"])
+            elif action == 'u':
+                building_type = ui_manager.centered_input("Upgrade which building type (House/Farm/Mine, or Back)? ").title()
+                if building_type in ("House", "Farm", "Mine"):
+                  self.upgrade_building(building_type, ui_manager, audio_manager)
+                  self.turn += 1
+                elif building_type == "Back" or building_type == "":
+                    pass
+                else:
+                  ui_manager.display_message("Invalid building type!", "text_warning")
+        self.story_manager.check_triggers(ui_manager, audio_manager)
+        return True

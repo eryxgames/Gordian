@@ -31,10 +31,26 @@ class ResourceEvent(Event):
     def trigger(self, game, ui_manager, audio_manager):
         super().trigger(game, ui_manager, audio_manager)
         if self.resource in game.resources:
-            game.resources[self.resource] += self.amount
-            ui_manager.display_message(f"{self.resource}: {game.resources[self.resource]}", "text_normal")
+            # --- CORRECTED: Use add() or remove() ---
+            original_amount = game.resources[self.resource].amount
+            if self.amount >= 0:
+                game.resources[self.resource].add(self.amount)
+            else:
+                game.resources[self.resource].remove(-self.amount)  # Pass positive value
+            new_amount = game.resources[self.resource].amount
+            # --- END CORRECTION ---
+            if new_amount < original_amount:  # Resource decreased
+                change = original_amount - new_amount
+                ui_manager.display_message(f"{self.resource}: {new_amount} (-{change})", "text_normal")
+            elif new_amount > original_amount: # Resource increased
+                change = new_amount - original_amount
+                ui_manager.display_message(f"{self.resource}: {new_amount} (+{change})", "text_normal")
+            else:
+                #No change to avoid f.e. -0 message
+                ui_manager.display_message(f"{self.resource}: {new_amount}", "text_normal")
         else:
             print(f"Error: Invalid resource type in ResourceEvent: {self.resource}")
+
 
 class ChainedEvent(Event):
     """An event that can trigger other events."""
@@ -52,16 +68,13 @@ class ChainedEvent(Event):
             if random.random() < subsequent_event_data["probability"]:
                 subsequent_event_data["event"].trigger(game, ui_manager, audio_manager)
 
-# --- NEW: StoryEvent ---
 class StoryEvent(Event):
     """An event that primarily advances the story."""
 
     def __init__(self, event_id, description, audio_cue=None):
         super().__init__(event_id, description, audio_cue)
 
-    # The trigger method is inherited from Event, and already does what we need
-    # (display the description and play the sound).  We don't need to override it.
-
+    # The trigger method is inherited from Event, and already does what we need.
 
 class EventManager:
     """Manages game events."""
@@ -79,12 +92,9 @@ class EventManager:
                     event = self.create_event(event_data)
                     if event:
                         self.events.append(event)
-        except FileNotFoundError:
-            print(f"Error: Event file not found: {filepath}")
-        except json.JSONDecodeError:
-            print(f"Error: Invalid JSON in event file: {filepath}")
-        except KeyError as e:
-            print(f"KeyError {e} in event file: {filepath}")
+        except (FileNotFoundError, json.JSONDecodeError, KeyError) as e:
+            print(f"Error loading events: {e}")
+
 
     def create_event(self, event_data):
         event_type = event_data["type"]
@@ -115,7 +125,6 @@ class EventManager:
 
             return ChainedEvent(event_id, description, initial_event, subsequent_events, audio_cue)
 
-        # --- NEW: Handle StoryEvent ---
         elif event_type == "StoryEvent":
             return StoryEvent(event_id, description, audio_cue)
 
