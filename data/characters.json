@@ -1,0 +1,63 @@
+{
+    "traveler1": {
+        "name": "Elara",
+        "description": "A wise and enigmatic traveler.",
+        "dialogue": [
+            "Greetings, young leader. The winds carry whispers of your growing settlement.",
+            "I have journeyed far and seen much. Perhaps I can offer some guidance.",
+            "Beware the shadows that lurk in the unexplored lands..."
+        ],
+        "trade_offers": {
+            "wood": {"food": 2},
+            "stone": {"food": 3}
+        }
+    },
+    "elder_mira": {
+        "name": "Elder Mira",
+        "description": "The village elder, keeper of ancient lore.",
+        "dialogue": [
+            "The spirits of our ancestors watch over us.",
+            "Remember the old ways, child. They hold the key to survival.",
+            "The Great Obelisk... it calls to us. Its power can save us."
+        ],
+        "quest_giver": true,
+        "quest": "obelisk_quest"
+    },
+     "hero_aric": {
+        "name": "Aric Stonebeard",
+        "description": "A brave and resourceful scout, destined for greatness.",
+        "hero": true,
+        "hero_class": "Scout",
+        "dialogue": [
+          "I'm ready for any challenge, leader!",
+          "The wilds hold many secrets, and dangers.",
+          "I'll scout ahead and bring back what we need."
+        ],
+        "quest_giver": false
+    },
+    "scientist_zane": {
+        "name": "Zane",
+        "description": "A brilliant but eccentric scientist.",
+        "dialogue": [
+            "Fascinating! The energy readings from this planet are extraordinary!",
+            "I believe I can harness this power... for the good of all, of course.",
+            "With the right application of science, we can overcome any obstacle!"
+        ],
+        "quest_giver": true,
+        "quest": "energy_research"
+    },
+    "alien_ambassador": {
+        "name": "Xylar",
+        "description": "An ambassador from a distant star system.",
+        "dialogue": [
+            "Greetings, inhabitants of this world. We come in peace.",
+            "We have observed your struggles. Perhaps we can offer assistance.",
+            "But know this: the universe is vast, and not all who wander it are friendly."
+        ],
+        "trade_offers": {
+            "stone": {"knowledge": 5},
+            "food": {"knowledge": 3}
+
+        }
+    }
+}

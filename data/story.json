@@ -1,0 +1,46 @@
+{
+    "intro": [
+        "Your people, survivors of a great cataclysm, have found refuge on this untamed planet.",
+        "You must build a new civilization, facing the wrath of nature and the unknown horrors that lurk in the shadows.",
+        "The whispers of ancient myths speak of powerful artifacts and forgotten knowledge that can aid you.",
+        "But beware, for the stars hold secrets both wondrous and terrifying."
+    ],
+    "chapter1": {
+        "trigger": { "turn": 5 },
+        "text": [
+            "The first few seasons are harsh. Storms batter your fledgling settlement, and resources are scarce.",
+            "Elder Mira speaks of an ancient Obelisk, said to possess the power to calm the storms."
+        ],
+        "event": "obelisk_rumors",
+        "audio_cue": "chapter1.wav"
+    },
+    "chapter2": {
+        "trigger": { "event": "obelisk_rumors" },
+        "text": [
+            "The scout Aric Stonebeard confirms the rumors. An Obelisk stands in the distance, radiating a strange energy.",
+            "But monstrous creatures guard it, drawn to its power."
+        ],
+        "event": "monster_threat",
+        "audio_cue": "chapter2.wav"
+
+    },
+    "chapter3":{
+      "trigger": {"building": "Obelisk", "count": 1},
+      "text": [
+          "You have built the Obelisk! Its power resonates through your settlement, calming the storms.",
+          "Zane, drawn by the Obelisk's energy, arrives. He believes he can unlock its secrets.",
+          "But the Obelisk has also attracted unwanted attention... from beyond this world."
+      ],
+       "event": "first_contact",
+       "audio_cue": "chapter3.wav"
+
+    },
+    "chapter4":{
+        "trigger":{"event": "first_contact"},
+        "text":[
+          "Xylar, an alien ambassador, appears. They offer knowledge and trade, but warn of greater dangers in the galaxy."
+        ],
+         "audio_cue": "chapter4.wav"
+    }
+
+}
