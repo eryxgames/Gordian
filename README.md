@@ -226,8 +226,9 @@ T  = Frost-Thorn Bushes, Hardy Flora
 - Gordian Moon Bestiary: Denizens of the Absurd
 - Uncommon & Dangerous Fauna
 ### Fauna
+- 
 ### Flora
-
+- 
 ## Population (Research Potentially Incomplete)
 
 - lower tech habitats, sparse
@@ -235,7 +236,7 @@ T  = Frost-Thorn Bushes, Hardy Flora
 - possible more advanced civilizations in the past undiscovered by other civilizations because of Gord shielding of radio waves
 - may have connection to native Eryxians
 ## Languages on Gordian (Research Incomplete)
-- even after sparse contacts with trading routes, the native language remains undetermined, main mode of communication seems to be extrasensory
+- even after sparse contacts with trading routes, the native language remains undetermined, main mode of communication seems to be extrasensory based on electromagnetic flow modulation
 - population communicates with outside visitors with neospeak, a form of latin used on research colonies, and because of vocal cords development there may be forms of ancient linguistics, which is either forgotten or kept secret from outside visitors
  there are uncanny similarities of chants to Eryxian native tribes, the reason and possible connections are unknown
 
