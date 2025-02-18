@@ -172,12 +172,19 @@ Y  = Vent-Palm Groves, Oases
 T  = Frost-Thorn Bushes, Hardy Flora
 ```
 
-### Biomes (Research Potentially Incomplete)
+## Biomes (Research Potentially Incomplete)
+- Gordian Moon Bestiary: Denizens of the Absurd
+- Uncommon & Dangerous Fauna
+### Fauna
+### Flora
 
-### Population (Research Potentially Incomplete)
+## Population (Research Potentially Incomplete)
 
 - lower tech habitats, sparse
- 
+- stone age to early metal tools
+- possible more advanced civilizations in the past undiscovered because of Gord shielding of radio waves
+- may have connection to native Eryxians
+    
 ### Mythological and "Magic" Grounding
 
 - Myths from Observation: Gordian myths and legends are deeply intertwined with astronomical phenomena on the planet.
