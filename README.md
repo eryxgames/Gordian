@@ -216,6 +216,10 @@ X  = Ancient Ruins, Tech Clusters
 ░▒ = Combined Storm & MHD Zones  
 Y  = Vent-Palm Groves, Oases    
 T  = Frost-Thorn Bushes, Hardy Flora
+╳╋┠┨ = Ancient Ruins & Structures
+△▲⌂ = Crystal Mountains/High Peaks/Habitable
+۞☀ = Geothermal/Volcanic Features
+⌾   = Methane Lakes & Outlets and Ponds
 ```
 
 ## Biomes (Research Potentially Incomplete)
