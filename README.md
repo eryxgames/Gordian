@@ -225,10 +225,21 @@ T  = Frost-Thorn Bushes, Hardy Flora
 ## Biomes (Research Potentially Incomplete)
 - Gordian Moon Bestiary: Denizens of the Absurd
 - Uncommon & Dangerous Fauna
+- diverse lifeforms migrating through zones and various biomes(The Tidally-Flexed Equatorial Scarplands,The Diurnal Methane Tidal Flats, The Aurora-Veiled Crystalline Peaks, The Magnetohydrodynamic Geothermal Rifts, The Shadow-Polar Ice Wastes) 
 ### Fauna
-- 
+- Plasma-Eels: Creatures that live in plasma pools, absorbing energy directly from the plasma. Bioluminescent and highly resistant to heat and electromagnetic fields. (Geothermal Rifts)
+- Mag-Shamblers (variant of Psychic Spore Shamblers): Shamblers mutated by MHD energies.
+- Crystal-Shriekers (new predator): Creatures that use sonic vibrations amplified by crystal formations to hunt prey. They might rely on auroral light to navigate and hunt in the crystal peaks.
+- Ar-Moths (variant of Whisper Moths): Moths with wings that bioluminesce in patterns that mimic auroral displays. Their psionic pollen might be subtly influenced by auroral energies.
+- Tide-Striders / Floaters: Variations of Methane-Lung Floaters adapted to navigate methane tidal flats. They might have "legs" or tendrils to anchor themselves in shallow methane or on exposed ground during low tide.
+- Atmospheric-Sail Drakes: Sky Serpents with large, membrane-like "sails" that allow them to ride atmospheric tides and currents. They hunt Floaters and other airborne creatures, using tidal winds to their advantage.
+- Tidal-Skin Scavengers: Creatures with flexible, segmented bodies adapted to survive in stressed environments. They scavenge in fissures and ruins, resistant to earthquakes and magnetic surges
 ### Flora
-- 
+- Thermo-Bloom Fungi (variant): Fungi that thrive in extreme heat and geothermal vents, exhibiting intense bioluminescence and potentially utilizing magnetohydrodynamic energy in their metabolism.
+
+### Tech Hybrids
+- Void mechs
+ 
 ## Population (Research Potentially Incomplete)
 
 - lower tech habitats, sparse
@@ -240,6 +251,42 @@ T  = Frost-Thorn Bushes, Hardy Flora
 - population communicates with outside visitors with neospeak, a form of latin used on research colonies, and because of vocal cords development there may be forms of ancient linguistics, which is either forgotten or kept secret from outside visitors
  there are uncanny similarities of chants to Eryxian native tribes, the reason and possible connections are unknown
 
+### Gordian Linguistic Concept: Lingua Gordiana Aenigma (Enigmatic Gordian Tongue) - Surreal Edition
+
+This iteration of Gordian language is no longer just a decayed form of something known. It's become inherently strange, reflecting the warped reality of Gordian Moon itself. Lingua Gordiana Aenigma is characterized by:
+
+Non-Linear Grammar: Linear time and causality are less emphasized. Sentence structure might be circular, fractal, or even fragmented. Meaning can emerge from juxtaposition and resonance rather than strict syntax.
+Sound-Symbolism Dominance: Sounds themselves carry inherent meaning beyond denotation. Certain phonemes evoke emotions, textures, or even abstract concepts directly. The sound of a word is as important as its "literal" meaning.
+Sensory Synesthesia: Language blurs the lines between senses. Words can simultaneously convey auditory, visual, tactile, and even psychic impressions. Describing a creature might involve its sound, color, texture, and the feeling it evokes in the mind.
+Mythopoeic & Abstract: Vocabulary is rich in terms for mythic entities, abstract forces (like radiation, psionic energy, tidal forces), and concepts that defy human understanding. Concrete nouns become less important than verbs and abstract descriptors.
+Resonance & Vibration: Language is seen as a vibrational force, influencing reality. Words are not just labels, but tools to shape the environment, affect minds, or interact with the moon's strange energies.
+
+### Grammar (Non-Linear & Evocative):
+
+No Fixed Word Order: Word order is fluid and context-dependent. Meaning emerges from the relationships between words, not their linear position.
+
+Absence of Tense/Time: Verbs might not be conjugated for tense in a linear past/present/future sense. Time is perceived cyclically or non-linearly on Gordian Moon. Verb forms might indicate aspect (completion, continuation, potentiality) rather than strict tense.
+
+Synesthetic Adjectives/Descriptors: Adjectives are multi-sensory. A word describing "crystal" might simultaneously convey its visual sparkle, its sharp sound, its cold texture, and its psychic resonance.
+
+Resonance Particles: Introduce particles or affixes that don't have direct grammatical function but modify the "vibrational quality" of words. These could be prefixes, suffixes, or infixes that subtly alter the emotional or sensory impact.
+
+Contextual Meaning: Meaning is heavily reliant on context, speaker intent, and listener's perception. The same "word" can have wildly different interpretations depending on the situation. Language becomes less about precise denotation and more about evocative suggestion.
+
+### Vocabulary Examples (Surreal & Mythopoeic):
+Core Concepts (Abstract & Sensory):
+- (Sun/Light/Radiation) -> Kha'Sol: "Kha" prefix adds a guttural, ancient quality. Implies not just light, but the raw, potent force of the twin suns.
+- (Voice/Word/Sound) -> Reson-Voxx: "Reson" highlights the vibrational aspect of sound, making "voice" more than just audible.
+- (Earth/Ground/Rock) -> G'Thonn: Evokes deep, resonant earth, geological power.
+- (Wind/Air) -> Iith-Vn: "Iith" prefix adds a whispering, ethereal quality. Captures the thin atmosphere.
+Creature Names (Re-imaginings):
+- Aeroplankton -> Iith-Eera(Whispering Air)
+- Radiant Scarabs (Sun-Eaters) -> Kha'Sol-Kryn (Sun-Crystal - combined to evoke radiant, crystalline energy)
+- Magma Mites (Forge-Worms) -> G'Thonn-Verm (Earth-Worms)
+- Mind-Dusters (Dream-Wing Moths) -> Alia (Wing)
+- Iron-Blood Leeches (Tech-Plague Swarms) -> Unknown
+- Rusted Colossi (Metal-Giants) -> Unknown
+- 
 ### Mythological and "Magic" Grounding
 
 - Myths from Observation: Gordian myths and legends are deeply intertwined with astronomical phenomena on the planet.
@@ -258,3 +305,10 @@ Radiation Shielding from Stellar Flares: Understanding the binary star system's 
 
 Psionic Amplification (Mythical): If the psionic field is real, it might be subtly influenced or amplified by the magnetohydrodynamic forces. Myths might speak of "geomantic" sites where psionic energy is stronger due to specific geological or magnetic alignments. "Crystal magic" could be related to crystals acting as resonators or amplifiers for these energies within MHD fields.
  
+Myths & Legends (New):
+
+The Ice-Heart Myths: Myths of a cold, uncaring heart at the center of the moon or within the polar ice, representing the harshness and unforgiving nature of the polar wastes.
+
+Cryo-Ghosts of the Ancients: Legends of Ancient civilizations that retreated into ice caves or cryo-vaults to escape some past catastrophe, their ghosts or frozen forms still residing within the ice.
+
+Sub-Ice World Myths: Beliefs in a hidden world beneath the ice, inhabited by strange creatures and holding ancient secrets.
