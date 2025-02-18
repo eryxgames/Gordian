@@ -182,9 +182,13 @@ T  = Frost-Thorn Bushes, Hardy Flora
 
 - lower tech habitats, sparse
 - stone age to early metal tools
-- possible more advanced civilizations in the past undiscovered because of Gord shielding of radio waves
+- possible more advanced civilizations in the past undiscovered by other civilizations because of Gord shielding of radio waves
 - may have connection to native Eryxians
-    
+## Languages on Gordian (Research Incomplete)
+- even after sparse contacts with trading routes, the native language remains undetermined, main mode of communication seems to be extrasensory
+- population communicates with outside visitors with neospeak, a form of latin used on research colonies, and because of vocal cords development there may be forms of ancient linguistics, which is either forgotten or kept secret from outside visitors
+ there are uncanny similarities of chants to Eryxian native tribes, the reason and possible connections are unknown
+
 ### Mythological and "Magic" Grounding
 
 - Myths from Observation: Gordian myths and legends are deeply intertwined with astronomical phenomena on the planet.
