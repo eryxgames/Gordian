@@ -11,6 +11,7 @@
 ```
 
 Command a growing settlement through text-based decision making. Build fortifications, manage resources, and protect your followers from a mysterious threat that lurks in the shadows.
+[Eryxian Universe Wiki](https://github.com/eryxgames/eryxian/wiki) | [Gordian Wiki](https://github.com/eryxgames/eryxian/wiki/Gordian)
 
 Developer screenshot (v0.0.2a):
 
