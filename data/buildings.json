@@ -1,0 +1,122 @@
+[
+    {
+        "name": "Hut",
+        "building_type": "House",
+        "levels": {
+            "1": {
+                "cost": {"wood": 10, "stone": 5},
+                "production": {"wood": 1},
+                "capacity": 5,
+                "description": "A basic shelter for your people."
+            }
+        }
+    },
+     {
+        "name": "Cottage",
+        "building_type": "House",
+        "levels": {
+            "2": {
+                "cost": {"wood": 20, "stone": 10},
+                "production": {"wood": 2},
+                "capacity": 8,
+                "description": "A more comfortable dwelling."
+            }
+        }
+    },
+    {
+        "name": "House",
+        "building_type": "House",
+        "levels": {
+            "3": {
+                "cost": {"wood": 40, "stone": 20},
+                "production": {"wood": 3},
+                "capacity": 12,
+                 "description": "A sturdy home for your growing population."
+            }
+        }
+    },
+    {
+        "name": "Farmstead",
+        "building_type": "Farm",
+        "levels": {
+            "1": {
+                "cost": {"wood": 5, "food": 5},
+                "production": {"food": 2},
+                "capacity": 3,
+                "description": "A small plot for growing crops."
+            }
+        }
+    },
+    {
+        "name": "Field",
+        "building_type": "Farm",
+        "levels": {
+            "2": {
+                "cost": {"wood": 10, "food": 10},
+                "production": {"food": 4},
+                "capacity": 5,
+                "description": "A larger area for cultivating crops."
+            }
+        }
+    },
+     {
+        "name": "Plantation",
+        "building_type": "Farm",
+        "levels": {
+            "3": {
+                "cost": {"wood": 20, "food": 20},
+                "production": {"food": 8},
+                "capacity": 8,
+                "description": "An expansive area for growing a variety of crops."
+            }
+        }
+    },
+    {
+        "name": "Quarry",
+        "building_type": "Mine",
+        "levels":{
+            "1": {
+                "cost": {"stone": 10, "food": 5},
+                "production": {"stone": 2},
+                "capacity": 3,
+                "description": "A basic site for extracting stone."
+            }
+        }
+    },
+    {
+        "name": "Shaft Mine",
+        "building_type": "Mine",
+        "levels": {
+            "2": {
+                "cost": {"stone": 20, "food": 10},
+                "production": {"stone": 4},
+                "capacity": 5,
+                  "description": "A deeper mine for extracting more stone."
+            }
+        }
+    },
+    {
+        "name": "Mine",
+        "building_type": "Mine",
+        "levels":{
+            "3": {
+                "cost": {"stone": 40, "food": 20},
+                "production": {"stone": 8},
+                "capacity": 8,
+                "description": "A large-scale mining operation."
+            }
+        }
+    },
+    {
+        "name": "Obelisk",
+        "building_type": "Wonder",
+        "levels": {
+            "1": {
+                "cost": {"wood": 100, "stone": 100, "food": 100},
+                "production": {},
+                "capacity": 0,
+                "description": "A magnificent monument to your civilization."
+            }
+        }
+    }
+]

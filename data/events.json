@@ -1,0 +1,106 @@
+[
+    {
+        "type": "ResourceEvent",
+        "event_id": "storm_event",
+        "description": "A storm hits! You lose 5 wood.",
+        "resource": "wood",
+        "amount": -5,
+        "audio_cue": ["storm1.wav", "storm2.wav"]
+    },
+    {
+        "type": "ResourceEvent",
+        "event_id": "find_wood_event",
+        "description": "A lucky find! You gain 10 wood.",
+        "resource": "wood",
+        "amount": 10,
+        "audio_cue": "find_wood.wav"
+    },
+    {
+        "type": "ResourceEvent",
+        "event_id": "raid_event",
+        "description": "Raiders attack! You lose 5 stone.",
+        "resource": "stone",
+        "amount": -5,
+        "audio_cue": "raid.wav"
+    },
+     {
+        "type": "ResourceEvent",
+        "event_id": "find_stone_event",
+        "description": "Miners found a hidden cache! You gain 10 stone.",
+        "resource": "stone",
+        "amount": 10,
+        "audio_cue": "find_stone.wav"
+    },
+    {
+        "type": "ResourceEvent",
+        "event_id": "drought_event",
+        "description": "A drought occurs! You lose 5 food.",
+        "resource": "food",
+        "amount": -5,
+        "audio_cue": "drought.wav"
+    },
+     {
+        "type": "ResourceEvent",
+        "event_id": "harvest_event",
+        "description": "A bountiful harvest! You gain 10 food.",
+        "resource": "food",
+        "amount": 10,
+        "audio_cue": "harvest.wav"
+    },
+    {
+        "type": "ChainedEvent",
+        "event_id": "dry_season_event",
+        "description": "Dry Season!",
+        "audio_cue": "dry_season.wav",
+        "initial_event": {
+            "type": "ResourceEvent",
+            "event_id": "dry_season_initial",
+            "description": "Water sources dwindle.",
+            "resource": "food",
+            "amount": -3,
+            "audio_cue": null
+        },
+        "subsequent_events": [
+            {
+                "probability": 0.7,
+                "event": {
+                    "type": "ResourceEvent",
+                    "event_id": "dry_season_crop_failure",
+                    "description": "Crop failure!",
+                    "resource": "food",
+                    "amount": -8,
+                    "audio_cue": "crop_failure.wav"
+                }
+            },
+             {
+                "probability": 0.3,
+                "event": {
+                    "type": "ResourceEvent",
+                    "event_id": "dry_season_animals",
+                    "description": "Animals migrate away!",
+                    "resource": "food",
+                    "amount": -4,
+                    "audio_cue": "animals_migrate.wav"
+                }
+            }
+        ]
+    },
+    {
+        "type": "StoryEvent",
+        "event_id": "obelisk_rumors",
+        "description": "Rumors spread of a powerful Obelisk in the distance.",
+        "audio_cue": "obelisk_rumors.wav"
+    },
+    {
+       "type": "StoryEvent",
+        "event_id": "monster_threat",
+        "description": "Monstrous creatures are guarding the Obelisk!",
+        "audio_cue": "monster_threat.wav"
+    },
+    {
+        "type": "StoryEvent",
+        "event_id": "first_contact",
+        "description": "A strange vessel appears in the sky.  First contact has been made!",
+        "audio_cue": "first_contact.wav"
+    }
+]

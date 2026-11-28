@@ -1,0 +1,28 @@
+{
+    "name": "Default Theme",
+    "colors": {
+        "text_normal": "white",
+        "text_highlight": "yellow",
+        "text_warning": "red",
+        "text_success": "green",
+        "background": "black",
+        "border": "lightgray",
+        "resource_wood": "brown",
+        "resource_stone": "gray",
+        "resource_food": "lightgreen",
+        "building_house": "cyan",
+        "building_farm": "green",
+        "building_mine": "darkgray",
+        "hero_available": "brightgreen",
+        "hero_unavailable": "gray"
+    },
+    "symbols": {
+        "wood": "Wood",
+        "stone": "Stone",
+        "food": "Food",
+        "House": "House",
+        "Farm": "Farm",
+        "Mine": "Mine",
+        "Wonder": "Wonder"
+    }
+}

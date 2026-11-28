@@ -1,0 +1,40 @@
+[
+    {
+        "class_id": "citizen",
+        "class_name": "Citizen",
+        "bonuses": {}
+    },
+    {
+        "class_id": "farmer",
+        "class_name": "Farmer",
+        "bonuses": {
+            "Farm": {"food": 1}
+        }
+    },
+    {
+        "class_id": "miner",
+        "class_name": "Miner",
+        "bonuses": {
+            "Mine": {"stone": 1}
+        }
+    },
+    {
+        "class_id": "craftsman",
+        "class_name": "Craftsman",
+        "bonuses": {
+            "House": {"wood": 1}
+        }
+    },
+    {
+        "class_id": "defender",
+        "class_name": "Defender",
+        "bonuses": {
+            "House": {"defense": 1}
+        },
+        "availability": {
+          "building_levels": {
+            "Barracks" : 1
+          }
+        }
+    }
+]

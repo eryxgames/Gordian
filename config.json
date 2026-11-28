@@ -1,0 +1,48 @@
+{
+    "starting_resources": {
+        "wood": 10,
+        "stone": 10,
+        "food": 10
+    },
+    "max_amounts": {
+        "wood": 150,
+        "stone": 80,
+        "food": 100
+    },
+    "victory_conditions": {
+        "standard": {
+            "wood": 50,
+            "stone": 50,
+            "food": 50,
+            "people": 50
+        },
+        "wonder": false
+    },
+    "difficulty": "medium",
+    "difficulty_settings": {
+        "easy": {
+            "event_frequency": 0.3,
+            "adversary_attack_chance": 0.1
+        },
+        "medium": {
+            "event_frequency": 0.5,
+            "adversary_attack_chance": 0.2
+        },
+        "hard": {
+            "event_frequency": 0.7,
+            "adversary_attack_chance": 0.3
+        }
+    },
+    "audio": {
+        "enabled": true,
+        "music_volume": 0.7,
+        "sfx_volume": 0.9,
+        "screen_music": {
+            "main": "main_theme.mp3",
+            "hero": "hero_theme.mp3",
+            "people": "people_theme.mp3",
+            "upgrades": "upgrades_theme.mp3"
+        }
+    },
+    "theme": "default"
+}
